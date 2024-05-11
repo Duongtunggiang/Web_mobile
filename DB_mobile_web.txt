@@ -1,0 +1,138 @@
+DROP DATABASE IF EXISTS goods;
+CREATE DATABASE goods;
+USE goods;
+
+CREATE TABLE users (
+    id INT(11) PRIMARY KEY AUTO_INCREMENT,
+    username NVARCHAR(255) NOT NULL,
+    password VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE admins (
+    id INT(11) PRIMARY KEY AUTO_INCREMENT,
+    name NVARCHAR(255) NOT NULL,
+    password VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE `role` (
+    userId INT(11),
+    roleId INT(11),
+	FOREIGN KEY (userId) REFERENCES users(id),
+    FOREIGN KEY (roleId) REFERENCES admins(id),
+    roleName VARCHAR(255) NOT NULL
+);
+
+INSERT INTO role (userId, roleName)
+SELECT id, 'user' FROM users;
+
+INSERT INTO role (roleId, roleName)
+SELECT id, 'admin' FROM admins;
+
+CREATE TABLE customers (
+    id INT(11) PRIMARY KEY AUTO_INCREMENT,
+    userId INT(11),
+    customerName NVARCHAR(255) NOT NULL,
+    address NVARCHAR(255) NOT NULL,
+    phoneNumber INT(11) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    FOREIGN KEY (userId) REFERENCES users(id)
+);
+
+create table `categoryProduct`(
+	id int(11) primary key auto_increment,
+    categoryName nvarchar(255) not null
+);
+insert into `categoryProduct`(id, categoryName) values
+(1,"iPhone 14"),
+(2, "iPhone 15");
+create table `product`(
+	id int(11) primary key auto_increment,
+    productName nvarchar(255) not null,
+    productCategoryPath nvarchar(255) not null,
+    img nvarchar(255) not null,
+    unitPrice double(10,3) UNSIGNED NOT NULL,
+    cid int(11),
+    foreign key (cid) references `categoryProduct`(id)
+);
+use favorite;
+select * from `product`;
+-- drop table product
+
+INSERT INTO `product` (id, productName, productCategoryPath, img, unitPrice, cid) VALUES
+    (7, "iPhone 14Promax",  "/iPhone/iPhone 14/iPhone 14Promax", "https://example.com/iphone15.jpg", 000, 1),
+    (8, "iPhone 15Promax",  "/iPhone/iPhone 15/iPhone 15Promax", "https://example.com/iphone15promax.jpg", 110, 2),
+    (9, "iPhone 15Pro",  "/iPhone/iPhone 15/iPhone 15Pro", "https://example.com/iphone15pro.jpg", 22120, 2),
+    (10, "iPhone 15Plus", "/iPhone/iPhone 15/iPhone 15Plus", "https://example.com/iphone15plus.jpg", 0, NULL),
+    (11, "iPhone 15Promax 256Gb", "/iPhone/iPhone 15/iPhone 15Promax", "https://example.com/iphone15promax256gb.jpg", 10, 2),
+    (12, "iPhone 15Promax 512Gb", "/iPhone/iPhone 15/iPhone 15Promax", "https://example.com/iphone15promax512gb.jpg", 0, 2),
+    (13, "iPhone 15Promax 1Tb", "/iPhone/iPhone 15/iPhone 15Promax", "https://example.com/iphone15promax1tb.jpg", 0, 2);
+    -- Create the 'customers' table
+-- SELECT * FROM product WHERE productType = 'iPhone 15';
+SELECT * FROM product WHERE cid = 2;
+
+CREATE TABLE orders (
+    id INT(11) PRIMARY KEY AUTO_INCREMENT,
+    customerId INT(11) NOT NULL,
+    orderDate DATE NOT NULL,
+    status VARCHAR(255) NOT NULL,
+    FOREIGN KEY (customerId) REFERENCES customers(id)
+);
+
+CREATE TABLE orderDetails (
+    id INT(11) PRIMARY KEY AUTO_INCREMENT,
+    orderId INT(11),
+    productId INT(11),
+    quantity INT(11) NOT NULL,
+    FOREIGN KEY (orderId) REFERENCES orders(id),
+    FOREIGN KEY (productId) REFERENCES `product`(id)
+);
+
+CREATE TABLE cart (
+	id INT(11) PRIMARY KEY,
+    userId INT(11),
+    productId INT(11),
+    FOREIGN KEY (userId) REFERENCES users(id),
+    FOREIGN KEY (productId) REFERENCES `product`(id)
+);
+
+CREATE TABLE productDetails (
+    id INT(11) PRIMARY KEY AUTO_INCREMENT,
+    productId INT(11) NOT NULL,
+    screenTechnology NVARCHAR(255) NOT NULL,
+    screenResolution NVARCHAR(255) NOT NULL,
+    glassQuality NVARCHAR(255) NOT NULL,
+    screenSize NVARCHAR(255) NOT NULL,
+    rearCameraResolution NVARCHAR(255) NOT NULL,
+    frontCameraResolution NVARCHAR(255) NOT NULL,
+    rearCameraDetails NVARCHAR(255) NOT NULL,
+    videoRecordingCapability NVARCHAR(255) NOT NULL,
+    cameraFeatures NVARCHAR(255) NOT NULL,
+    processor NVARCHAR(255) NOT NULL,
+    chip NVARCHAR(255) NOT NULL,
+    operatingSystem NVARCHAR(255) NOT NULL,
+    ram NVARCHAR(255) NOT NULL,
+    storage NVARCHAR(255) NOT NULL,
+    mobileNetworkSupport NVARCHAR(255) NOT NULL,
+    wifiSupport NVARCHAR(255) NOT NULL,
+    bluetoothSupport NVARCHAR(255) NOT NULL,
+    gpsSupport NVARCHAR(255) NOT NULL,
+    connectivityPorts NVARCHAR(255) NOT NULL,
+    batteryCapacity NVARCHAR(255) NOT NULL,
+    FOREIGN KEY (productId) REFERENCES `product`(id)
+);
+
+CREATE TABLE memory (
+    id INT(11) PRIMARY KEY AUTO_INCREMENT,
+    productId INT(11) NOT NULL,
+    storageCapacity NVARCHAR(255) NOT NULL,
+    color NVARCHAR(255) NOT NULL,
+    price INT(11) NOT NULL,
+    FOREIGN KEY (productId) REFERENCES `product`(id)
+);
+
+CREATE TABLE ProductImages (
+    id INT(11) PRIMARY KEY AUTO_INCREMENT,
+    productId INT(11) NOT NULL,
+    imageUrl VARCHAR(255) NOT NULL,
+    FOREIGN KEY (productId) REFERENCES `product`(id)
+);
